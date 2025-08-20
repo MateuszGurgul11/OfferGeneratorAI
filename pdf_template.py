@@ -1,4 +1,11 @@
-from weasyprint import HTML
+try:
+    from weasyprint import HTML
+    WEASYPRINT_AVAILABLE = True
+except ImportError as e:
+    WEASYPRINT_AVAILABLE = False
+    import streamlit as st
+    st.error(f"WeasyPrint nie jest dostępny: {e}")
+    st.info("Sprawdź czy wszystkie systemowe zależności są zainstalowane")
 from jinja2 import Template
 import base64
 import os
@@ -210,6 +217,9 @@ font-size: 18px;
 """
 
 def generate_sauna_offer(sauna_data):
+    if not WEASYPRINT_AVAILABLE:
+        raise ImportError("WeasyPrint nie jest dostępny. Sprawdź instalację bibliotek systemowych.")
+    
     images = get_sauna_images(sauna_data["type"], sauna_data["model"])
     furnace_image = get_furnace_image(sauna_data.get("furnace", ""))
     logo_image = get_logo_image()
